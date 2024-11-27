@@ -1,0 +1,26 @@
+{
+  "name": "temp-disposable-email",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src --fix",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pirasanthan-jesugeevegan/temp-disposable-email.git"
+  },
+  "keywords": [],
+  "author": "Pirasanthan Jesugeevegan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/issues"
+  },
+  "homepage": "https://github.com/pirasanthan-jesugeevegan/temp-disposable-email#readme",
+  "dependencies": {
+    "axios": "^1.7.8"
+  }
+}
