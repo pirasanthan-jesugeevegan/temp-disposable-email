@@ -1,3 +1,12 @@
+## [1.6.1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.7.0...v1.6.1) (2024-11-28)
+
+
+### Bug Fixes
+
+* downgrade version to 1.6.0 in package.json ([3422bb1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/3422bb1adf4765b0283da9d814d2301044408b80))
+
+
+
 # [1.7.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.0...v1.7.0) (2024-11-28)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * update TypeScript target to ES6 in tsconfig.json ([0edc477](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/0edc477af52df30c15b251239d6befcb757f2ed3))
-
-
-
-# [1.3.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.2.0...v1.3.0) (2024-11-28)
-
-
-### Features
-
-* update TypeScript configuration to use ESNext module and add skipLibCheck option ([0ffa53a](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/0ffa53aa3851d622b3a0bad5b2024b797966be8d))
 
 
 
