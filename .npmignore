@@ -1,2 +1,6 @@
 node_modules
 .env
+.github
+README.md
+dist
+tests
