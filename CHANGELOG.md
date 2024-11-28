@@ -1,3 +1,12 @@
+# [1.5.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.4.0...v1.5.0) (2024-11-28)
+
+
+### Features
+
+* change TypeScript module to 'nodenext' in tsconfig.json ([f62b842](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/f62b842afe237c5c63a0931568ad46552f92d936))
+
+
+
 # [1.4.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.3.0...v1.4.0) (2024-11-28)
 
 
