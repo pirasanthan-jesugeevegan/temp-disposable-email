@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 export { createInbox, deleteAccount } from './services/accountService';
 export {
   getRecentEmail,
