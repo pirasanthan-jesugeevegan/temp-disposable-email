@@ -33,7 +33,15 @@ npm install temp-disposable-email
 
 To use the package, import the functions in your TypeScript or JavaScript project:
 
+#### Using ES Modules (Recommended)
+
 ```typescript
+import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
+```
+
+#### Using CommonJS
+
+```javascript
 import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
 ```
 
