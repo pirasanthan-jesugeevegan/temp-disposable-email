@@ -1,3 +1,12 @@
+## [1.6.4](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.3...v1.6.4) (2024-11-28)
+
+
+### Bug Fixes
+
+* update BASE_URL in constant and simplify publish workflow ([35e4615](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/35e4615498dad384b75ac226d3bd7fa82bc64ba9))
+
+
+
 ## [1.6.3](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.2...v1.6.3) (2024-11-28)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * update package configuration for CommonJS and ES module support, add new tsconfig for CommonJS ([d322290](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/d322290fd9c192792b16de2547211b716123a9d4))
-
-
-
-# [1.6.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.5.0...v1.6.0) (2024-11-28)
-
-
-### Features
-
-* update package version to 1.4.0, add tslib dependency, and modify tsconfig settings ([a6fc115](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/a6fc115fa263909fbe346f0f86ae95c18b1bea08))
 
 
 
