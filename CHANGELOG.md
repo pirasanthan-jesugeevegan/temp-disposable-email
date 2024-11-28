@@ -1,3 +1,12 @@
+## [1.6.2](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.1...v1.6.2) (2024-11-28)
+
+
+### Bug Fixes
+
+* downgrade version to 1.6.0 in package-lock.json and update BASE_URL handling ([919c24e](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/919c24e563a7541f2a4163f79f49bd6e545f9dd6))
+
+
+
 ## [1.6.1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.7.0...v1.6.1) (2024-11-28)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * change TypeScript module to 'nodenext' in tsconfig.json ([f62b842](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/f62b842afe237c5c63a0931568ad46552f92d936))
-
-
-
-# [1.4.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.3.0...v1.4.0) (2024-11-28)
-
-
-### Features
-
-* update TypeScript target to ES6 in tsconfig.json ([0edc477](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/0edc477af52df30c15b251239d6befcb757f2ed3))
 
 
 
