@@ -2,7 +2,8 @@
   "name": "temp-disposable-email",
   "version": "1.4.0",
   "description": "",
-  "main": "src/index.ts",
+  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest",
@@ -31,7 +32,8 @@
   "homepage": "https://github.com/pirasanthan-jesugeevegan/temp-disposable-email#readme",
   "dependencies": {
     "axios": "^1.7.8",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
