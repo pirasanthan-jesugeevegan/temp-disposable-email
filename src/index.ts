@@ -1,3 +1,8 @@
 export { createInbox, deleteAccount } from './services/accountService';
-export { getRecentEmail, deleteMessage } from './services/messageService';
+export {
+  getRecentEmail,
+  deleteMessage,
+  MessageContent,
+  GetEmailOptions,
+} from './services/messageService';
 export { getVerificationCode } from './utils/getVerificationCode';

@@ -3,7 +3,7 @@ import { getToken } from './authService';
 import { BASE_URL } from '../utils/constant';
 import { fetchMessageContent, fetchMessages } from '../utils/api';
 
-interface MessageContent {
+export interface MessageContent {
   from: { address: string };
   to: { address: string }[];
   subject: string;
@@ -11,7 +11,7 @@ interface MessageContent {
   text: string;
   html: string;
 }
-interface PollingOptions {
+export interface GetEmailOptions {
   maxWaitTime?: number;
   waitInterval?: number;
   logPolling?: boolean;
@@ -26,7 +26,7 @@ interface PollingOptions {
  * messages if the inbox is empty. Optionally, the message can be
  * deleted after reading.
  *
- * @param {PollingOptions} [options] - Optional settings for polling and deletion.
+ * @param {GetEmailOptions} [options] - Optional settings for polling and deletion.
  * @returns {Promise<MessageContent | null>} The email content (sender, recipient, subject, text, HTML), or `null` if no messages are found.
  *
  * @throws {Error} If no messages are available within the polling timeout or authentication fails.
@@ -36,7 +36,7 @@ interface PollingOptions {
  * console.log(message.subject); // Outputs: "Hello!"
  */
 export const getRecentEmail = async (
-  options?: PollingOptions
+  options?: GetEmailOptions
 ): Promise<MessageContent | null> => {
   const token = getToken();
   const {
