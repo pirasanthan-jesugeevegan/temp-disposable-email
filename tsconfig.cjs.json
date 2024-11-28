@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "CommonJS",
     "target": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "./dist/esm",
+    "outDir": "./dist/cjs",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true

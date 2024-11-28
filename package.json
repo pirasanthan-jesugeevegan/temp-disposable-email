@@ -2,10 +2,16 @@
   "name": "temp-disposable-email",
   "version": "1.5.0",
   "description": "",
-  "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/cjs/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    }
+  },
+  "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
     "test": "jest",
     "lint": "eslint src --fix",
     "prepare": "npm run build"
