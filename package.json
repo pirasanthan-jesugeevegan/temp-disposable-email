@@ -13,7 +13,16 @@
     "type": "git",
     "url": "git+https://github.com/pirasanthan-jesugeevegan/temp-disposable-email.git"
   },
-  "keywords": [],
+  "keywords": [
+    "temp-email",
+    "disposable-email",
+    "email",
+    "email-testing",
+    "automation",
+    "polling",
+    "cypress",
+    "playwright"
+  ],
   "author": "Pirasanthan Jesugeevegan",
   "license": "MIT",
   "bugs": {
@@ -25,6 +34,10 @@
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0"
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.0",
+    "axios-mock-adapter": "^2.1.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5"
   }
 }
