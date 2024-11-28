@@ -1,4 +1,4 @@
-# [1.7.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.4...v1.7.0) (2024-11-28)
+# [1.8.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.4...v1.8.0) (2024-11-28)
 
 
 ### Bug Fixes
