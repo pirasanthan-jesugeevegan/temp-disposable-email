@@ -2,7 +2,7 @@
   "name": "temp-disposable-email",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest",
