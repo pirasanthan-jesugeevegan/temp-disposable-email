@@ -1,3 +1,17 @@
+# [1.7.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.4...v1.7.0) (2024-11-28)
+
+
+### Bug Fixes
+
+* add skipLibCheck and exclude examples from TypeScript configuration ([5c220fd](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/5c220fd8cc3a3abb8ff693c1410c29c29067f4ab))
+
+
+### Features
+
+* add Cypress configuration and support for temporary email testing ([77b26a6](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/77b26a680378d693e29dc8b5a984e686742f65e0))
+
+
+
 ## [1.6.4](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.3...v1.6.4) (2024-11-28)
 
 
@@ -25,16 +39,12 @@
 
 
 
-## [1.6.1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.7.0...v1.6.1) (2024-11-28)
+## [1.6.1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.0...v1.6.1) (2024-11-28)
 
 
 ### Bug Fixes
 
 * downgrade version to 1.6.0 in package.json ([3422bb1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/3422bb1adf4765b0283da9d814d2301044408b80))
-
-
-
-# [1.7.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.0...v1.7.0) (2024-11-28)
 
 
 ### Features
