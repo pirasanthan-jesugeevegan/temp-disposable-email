@@ -1,4 +1,13 @@
-# 1.1.0 (2024-11-28)
+# [1.2.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.1.0...v1.2.0) (2024-11-28)
+
+
+### Features
+
+* update main entry point to TypeScript source file ([3332c21](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/3332c2147b825384ed52b068b95172f4fa3e94bd))
+
+
+
+# [1.1.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/d886b69f54169b24654ea60de37985a522058ac8...v1.1.0) (2024-11-28)
 
 
 ### Features
