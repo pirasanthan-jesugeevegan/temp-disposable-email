@@ -1,3 +1,12 @@
+# [1.7.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.0...v1.7.0) (2024-11-28)
+
+
+### Features
+
+* update package configuration for CommonJS and ES module support, add new tsconfig for CommonJS ([d322290](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/d322290fd9c192792b16de2547211b716123a9d4))
+
+
+
 # [1.6.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.5.0...v1.6.0) (2024-11-28)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * update TypeScript configuration to use ESNext module and add skipLibCheck option ([0ffa53a](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/0ffa53aa3851d622b3a0bad5b2024b797966be8d))
-
-
-
-# [1.2.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.1.0...v1.2.0) (2024-11-28)
-
-
-### Features
-
-* update main entry point to TypeScript source file ([3332c21](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/3332c2147b825384ed52b068b95172f4fa3e94bd))
 
 
 
