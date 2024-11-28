@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.2.0...v1.3.0) (2024-11-28)
+
+
+### Features
+
+* update TypeScript configuration to use ESNext module and add skipLibCheck option ([0ffa53a](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/0ffa53aa3851d622b3a0bad5b2024b797966be8d))
+
+
+
 # [1.2.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.1.0...v1.2.0) (2024-11-28)
 
 
