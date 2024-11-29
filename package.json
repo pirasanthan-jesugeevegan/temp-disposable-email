@@ -1,6 +1,6 @@
 {
   "name": "temp-disposable-email",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Generating Temporary email address for testing, retrieving email from the temporary email address",
   "main": "dist/cjs/index.js",
   "exports": {
