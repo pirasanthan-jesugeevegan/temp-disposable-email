@@ -15,13 +15,12 @@
  */
 
 export const getVerificationCode = async (
-  text: string
-): Promise<string | null> => {
+  text: string | undefined
+): Promise<string> => {
   console.log('Extracting the verification code from the email content...');
   const matches = text.match(/\b\d{5,}\b/);
   if (matches) {
     return matches[0];
   }
-  console.warn('No verification code found in the provided email content.');
-  return null;
+  throw new Error('No verification code found in the provided email content.');
 };
