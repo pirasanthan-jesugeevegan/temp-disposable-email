@@ -1,3 +1,12 @@
+## [1.10.1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.10.0...v1.10.1) (2024-11-29)
+
+
+### Bug Fixes
+
+* update README with CommonJS import syntax for better clarity ([a6b2678](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/a6b26783b5485e2745820f8ecd621fdda0a69d54))
+
+
+
 # [1.10.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.9.0...v1.10.0) (2024-11-28)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * update BASE_URL in constant and simplify publish workflow ([35e4615](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/35e4615498dad384b75ac226d3bd7fa82bc64ba9))
-
-
-
-## [1.6.3](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.2...v1.6.3) (2024-11-28)
-
-
-### Bug Fixes
-
-* update publish workflow to set BASE_URL and build before publishing ([3f0e0dd](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/3f0e0dd22b43b36d3f7ffd2e4389da3f8f7ac3d4))
 
 
 
