@@ -3,6 +3,7 @@
 import {
   createInbox,
   getRecentEmail,
+  deleteAccount,
   GetEmailOptions,
   MessageContent,
 } from '../../../src';
@@ -21,6 +22,11 @@ declare global {
       getRecentEmail(
         options: GetEmailOptions
       ): Chainable<MessageContent | null>;
+
+      /**
+       * Deletes the account associated with the email address.
+       */
+      deleteAccount(): Chainable<void>;
     }
   }
 }
@@ -31,4 +37,8 @@ Cypress.Commands.add('createInbox', function (prefix?: string) {
 
 Cypress.Commands.add('getRecentEmail', function (options: GetEmailOptions) {
   return cy.wrap(getRecentEmail(options));
+});
+
+Cypress.Commands.add('deleteAccount', function () {
+  return cy.wrap(deleteAccount());
 });

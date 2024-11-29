@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
+  defaultCommandTimeout: 60000,
   e2e: {
     specPattern: 'examples/cypress/e2e/**/*.cy.ts',
     supportFile: 'examples/cypress/support/e2e.ts',
