@@ -85,7 +85,7 @@ export const getRecentEmail = async (
       }
       const messageId = messages[0].id;
       if (logPolling) {
-        console.log(`Message retrieved: ${messageId}`);
+        console.log(`Message retrieved`);
       }
       const { from, to, subject, intro, text, html } =
         await fetchMessageContent(messageId);
