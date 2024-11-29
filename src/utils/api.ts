@@ -18,8 +18,6 @@ export const fetchMessages = async (): Promise<any[]> => {
     const res = await axios.get(`${BASE_URL}/messages`, {
       headers: getAuthHeaders(),
     });
-    console.log(JSON.stringify(res.data));
-
     return res.data;
   } catch (error) {
     console.error('Error fetching messages:', error);
