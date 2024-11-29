@@ -61,7 +61,11 @@ To use the package, import the functions in your TypeScript or JavaScript projec
 #### Using ES Modules (Recommended)
 
 ```typescript
-import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
+import {
+  createInbox,
+  getRecentEmail,
+  deleteAccount,
+} from 'temp-disposable-email';
 ```
 
 #### Using CommonJS
@@ -69,7 +73,7 @@ import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
 ```javascript
 const {
   createInbox,
-  getMessage,
+  getRecentEmail,
   deleteAccount,
 } = require('temp-disposable-email');
 ```
@@ -142,7 +146,11 @@ For using temp-disposable-email with Cypress, see the example in the [Cypress fo
 Here's a complete example of creating an inbox, retrieving a message, and deleting the account:
 
 ```typescript
-import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
+import {
+  createInbox,
+  getRecentEmail,
+  deleteAccount,
+} from 'temp-disposable-email';
 
 async function run() {
   try {
@@ -151,7 +159,7 @@ async function run() {
     console.log('Created email:', email);
 
     // Get the first available message from the inbox
-    const message = await getMessage({
+    const message = await getRecentEmail({
       maxWaitTime: 50000,
       waitInterval: 3000,
       logPolling: true,
@@ -194,7 +202,7 @@ run();
 
 ## Get Email Options
 
-You can configure polling behavior by passing an options object to `getMessage`. The available options are:
+You can configure polling behavior by passing an options object to `getRecentEmail`. The available options are:
 
 - `maxWaitTime` (Optional): The maximum time to wait for messages (in milliseconds).
 - `waitInterval` (Optional): The interval between polling attempts (in milliseconds).
