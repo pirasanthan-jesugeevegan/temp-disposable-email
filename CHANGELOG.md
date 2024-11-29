@@ -1,10 +1,11 @@
-## [0.0.1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.11.3...v0.0.1) (2024-11-29)
+## [1.11.4](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.11.3...v1.11.4) (2024-11-29)
 
 
 ### Bug Fixes
 
 * add changelog generation and release creation steps to CI workflow ([191def0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/191def07b8a21d0d081b95eaf061bee5dc460a3f))
 * correct indentation in CI workflow steps ([4f7a8bb](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/4f7a8bb83745b6b58fabd5aceb645217ceba8664))
+* update version to 1.11.3 in package.json and package-lock.json ([844b7f6](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/844b7f687637ea93bb5f2fa86eafddf288ab4093))
 
 
 
