@@ -1,15 +1,36 @@
-# Temp Disposable Email
+<h1 align="center">Temp Disposable Email</h1>
+<p align="center">
+<a href="#feature">Features</a> |
+<a href="#install">Install</a> |
+<a href="#usage">Usage </a>|
+<a href="#example">Examples </a>|
+<a href="#doc">API Document</a>
+</p>
 
-<span align="center">
-
-[![npm version](https://badge.fury.io/js/temp-disposable-email.svg)](https://www.npmjs.com/package/gmail-tester)
-![NPM Downloads](https://img.shields.io/npm/d18m/temp-disposable-email)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![GitHub stars](https://img.shields.io/github/stars/pirasanthan-jesugeevegan/temp-disposable-email?style=social)
-
-</span>
+<div align="center">
+  <span style="display: inline-block; margin-right: 10px;">
+    <a href="https://www.npmjs.com/package/gmail-tester">
+      <img src="https://badge.fury.io/js/temp-disposable-email.svg" alt="npm version" />
+    </a>
+  </span>
+  <span style="display: inline-block; margin-right: 10px;">
+    <img src="https://img.shields.io/npm/d18m/temp-disposable-email" alt="NPM Downloads" />
+  </span>
+  <span style="display: inline-block; margin-right: 10px;">
+    <a href="https://opensource.org/licenses/MIT">
+      <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
+    </a>
+  </span>
+  <span style="display: inline-block;">
+    <a href="https://github.com/pirasanthan-jesugeevegan/temp-disposable-email">
+      <img src="https://img.shields.io/github/stars/pirasanthan-jesugeevegan/temp-disposable-email?style=social" alt="GitHub stars" />
+    </a>
+  </span>
+</div>
 
 This npm package provides a simple interface for temp email. You can use it to create disposable email accounts, retrieve messages, and delete accounts when done. It includes polling functionality to wait for messages in the inbox and fetch their content.
+
+<p id="feature"></p>
 
 ## Features
 
@@ -19,6 +40,8 @@ This npm package provides a simple interface for temp email. You can use it to c
 - **Delete Messages**: Delete a specific message from the inbox.
 - **Delete Account**: Remove the temporary account after usage
 
+<p id="install"></p>
+
 ## Installation
 
 You can install this package via npm:
@@ -26,6 +49,8 @@ You can install this package via npm:
 ```bash
 npm install temp-disposable-email
 ```
+
+<p id="usage"></p>
 
 ## Usage
 
@@ -100,6 +125,8 @@ console.log('Account deleted');
 
 - `Promise<void>`: Resolves when the account is successfully deleted.
 
+<p id="example"></p>
+
 ## Example Workflow
 
 Here's a complete example of creating an inbox, retrieving a message, and deleting the account:
@@ -131,6 +158,8 @@ async function run() {
 
 run();
 ```
+
+<p id="doc"></p>
 
 ## API Documentation
 
