@@ -1,9 +1,12 @@
 import { test as base, expect } from '@playwright/test';
+
 import {
   createInbox,
   getRecentEmail,
   deleteAccount,
-} from 'temp-disposable-email';
+  getVerificationCode,
+} from '../../src';
+//! NOTE: replace from '../../src' with 'temp-disposable-email' in your project
 
 interface EmailHelper {
   createInbox: typeof createInbox;
@@ -22,48 +25,96 @@ const test = base.extend<{ emailHelper: EmailHelper }>({
   },
 });
 
-test.describe('Sign up with temporary email', () => {
+test.describe('DEMO', () => {
   test.afterEach(async () => {
     await deleteAccount();
   });
-  test('direct use from of the package', async ({ page }) => {
+  test('[Direct Use] - Sign up - Get Verification code from email', async ({
+    page,
+  }) => {
+    // Create a dynamic email address
     const email = await createInbox(
       `newman${Math.random().toString().substr(2, 9)}`
     );
-    await page.goto('https://app.postdrop.io/signup');
-    await page.fill('#email', email);
-    await page.fill('#password', 'Pass@123');
-    await page.fill('#name', 'testMMMM');
-    await page.fill('#company', 'testMMMMc');
-    await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
-    await page
-      .getByRole('heading', { name: 'Thanks for signing up!' })
-      .isVisible();
 
+    // Navigate to the playground website
+    await page.goto('https://playground.mailslurp.com');
+
+    // Define locators for reusability
+    const emailInput = page.locator('input[name="email"]');
+    const passwordInput = page.locator('input[name="password"]');
+    const signUpButton = page.locator(
+      '[data-test="sign-up-create-account-button"]'
+    );
+    const verificationCodeInput = page.locator(
+      '[data-test="confirm-sign-up-confirmation-code-input"]'
+    );
+    const confirmButton = page.locator(
+      '[data-test="confirm-sign-up-confirm-button"]'
+    );
+    const signInPrompt = page.getByText('Sign in to your account');
+
+    // Fill in the sign-up form
+    await page.click('[data-test="sign-in-create-account-link"]');
+    await emailInput.fill(email);
+    await passwordInput.fill('Pass@123');
+    await signUpButton.click();
+
+    // Wait for the verification code input to appear
+    await expect(verificationCodeInput).toBeVisible();
+
+    // Fetch the verification code from the email
     const mailbox = await getRecentEmail({
       maxWaitTime: 80000,
       waitInterval: 1000,
       deleteAfterRead: true,
       logPolling: true,
     });
+    const verificationCode = await getVerificationCode(mailbox?.html[0]);
 
-    expect(mailbox?.subject).toContain('Postdrop - Verify Account');
+    // Fill in the verification code and complete sign-up
+    await verificationCodeInput.fill(verificationCode || '');
+    await confirmButton.click();
+
+    // Verify that the user is redirected to the sign-in page
+    await expect(signInPrompt).toBeVisible();
   });
-
-  test('use with fixtures', async ({ page, emailHelper }) => {
+  test('[Fixtures Use] - Sign up - Check email content and subject', async ({
+    page,
+    emailHelper,
+  }) => {
+    // Create a dynamic email address
     const email = await emailHelper.createInbox(
       `newman${Math.random().toString().substr(2, 9)}`
     );
-    await page.goto('https://app.postdrop.io/signup');
-    await page.fill('#email', email);
-    await page.fill('#password', 'Pass@123');
-    await page.fill('#name', 'testMMMM');
-    await page.fill('#company', 'testMMMMc');
-    await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
-    await page
-      .getByRole('heading', { name: 'Thanks for signing up!' })
-      .isVisible();
 
+    // Navigate to the sign-up page
+    await page.goto('https://app.postdrop.io/signup');
+
+    // Define locators for reusability
+    const emailInput = page.locator('#email');
+    const passwordInput = page.locator('#password');
+    const nameInput = page.locator('#name');
+    const companyInput = page.locator('#company');
+    const signUpButton = page.getByRole('button', {
+      name: 'Sign Up',
+      exact: true,
+    });
+    const successMessage = page.getByRole('heading', {
+      name: 'Thanks for signing up!',
+    });
+
+    // Fill in the sign-up form
+    await emailInput.fill(email);
+    await passwordInput.fill('Pass@123');
+    await nameInput.fill('testMMMM');
+    await companyInput.fill('testMMMMc');
+    await signUpButton.click();
+
+    // Verify the success message is displayed
+    await expect(successMessage).toBeVisible();
+
+    // Fetch the verification email
     const mailbox = await emailHelper.getRecentEmail({
       maxWaitTime: 80000,
       waitInterval: 1000,
@@ -71,6 +122,10 @@ test.describe('Sign up with temporary email', () => {
       logPolling: true,
     });
 
+    // Assert email subject and content
     expect(mailbox?.subject).toContain('Postdrop - Verify Account');
+    expect(mailbox?.html[0]).toContain(
+      'please verify your account by clicking the button'
+    );
   });
 });
