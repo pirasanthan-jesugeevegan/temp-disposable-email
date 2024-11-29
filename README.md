@@ -129,6 +129,16 @@ console.log('Account deleted');
 
 ## Example Workflow
 
+### Playwright Example
+
+For using temp-disposable-email with Playwright, see the example in the [Playwright folder](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/tree/master/examples/playwright).
+
+### Cypress Example
+
+For using temp-disposable-email with Cypress, see the example in the [Cypress folder](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/tree/master/examples/cypress).
+
+### Node Example
+
 Here's a complete example of creating an inbox, retrieving a message, and deleting the account:
 
 ```typescript
