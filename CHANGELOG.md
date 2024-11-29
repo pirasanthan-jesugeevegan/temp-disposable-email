@@ -1,3 +1,13 @@
+# [1.10.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.9.0...v1.10.0) (2024-11-28)
+
+
+### Features
+
+* add Playwright testing framework and configuration; update .gitignore and package files ([64911b1](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/64911b1a222c8000a3b94268c29e4ca9b495658b))
+* update README with ES Modules and CommonJS usage examples; bump version to 1.8.0 and add Cypress test script ([e795bd3](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/e795bd3f9f736a4c237d00037c2528348eb01e05))
+
+
+
 # [1.9.0](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.8.0...v1.9.0) (2024-11-28)
 
 
@@ -36,15 +46,6 @@
 ### Bug Fixes
 
 * update publish workflow to set BASE_URL and build before publishing ([3f0e0dd](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/3f0e0dd22b43b36d3f7ffd2e4389da3f8f7ac3d4))
-
-
-
-## [1.6.2](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/compare/v1.6.1...v1.6.2) (2024-11-28)
-
-
-### Bug Fixes
-
-* downgrade version to 1.6.0 in package-lock.json and update BASE_URL handling ([919c24e](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/commit/919c24e563a7541f2a4163f79f49bd6e545f9dd6))
 
 
 
