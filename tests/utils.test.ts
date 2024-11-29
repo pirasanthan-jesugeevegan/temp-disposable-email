@@ -28,11 +28,13 @@ describe('Utils', () => {
       expect(code).toBe('123456');
     });
 
-    it('should return null if no code is present', async () => {
+    it('should throw an error if no verification code is found in the text', async () => {
       const text = 'No code here.';
-      const code = await getVerificationCode(text);
 
-      expect(code).toBeNull();
+      // Use an async assertion to expect the function to throw an error
+      await expect(getVerificationCode(text)).rejects.toThrow(
+        'No verification code found in the provided email content.'
+      );
     });
   });
 });
