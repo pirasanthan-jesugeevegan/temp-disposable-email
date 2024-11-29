@@ -73,7 +73,7 @@ test.describe('DEMO', () => {
     const verificationCode = await getVerificationCode(mailbox?.html[0]);
 
     // Fill in the verification code and complete sign-up
-    await verificationCodeInput.fill(verificationCode || '');
+    await verificationCodeInput.fill(verificationCode);
     await confirmButton.click();
 
     // Verify that the user is redirected to the sign-in page
