@@ -42,7 +42,11 @@ import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
 #### Using CommonJS
 
 ```javascript
-import { createInbox, getMessage, deleteAccount } from 'temp-disposable-email';
+const {
+  createInbox,
+  getMessage,
+  deleteAccount,
+} = require('temp-disposable-email');
 ```
 
 ### 2\. Create an Inbox
