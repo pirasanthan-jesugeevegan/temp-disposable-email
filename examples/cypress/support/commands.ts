@@ -1,10 +1,11 @@
 /// <reference types="cypress" />
 
 import {
-  createInbox,
+  generateEmail,
   getRecentEmail,
   deleteAccount,
   GetEmailOptions,
+  GeneratedEmail,
   MessageContent,
 } from '../../../src';
 
@@ -14,7 +15,7 @@ declare global {
       /**
        * Creates a new inbox and returns its email address.
        */
-      createInbox(prefix?: string): Chainable<string>;
+      generateEmail(prefix?: string): Chainable<GeneratedEmail>;
 
       /**
        * Fetches the most recent email based on provided options.
@@ -26,19 +27,19 @@ declare global {
       /**
        * Deletes the account associated with the email address.
        */
-      deleteAccount(): Chainable<void>;
+      deleteAccount(accountId: string): Chainable<number>;
     }
   }
 }
 
-Cypress.Commands.add('createInbox', function (prefix?: string) {
-  return cy.wrap(createInbox(prefix));
+Cypress.Commands.add('generateEmail', function (prefix?: string) {
+  return cy.wrap(generateEmail(prefix));
 });
 
 Cypress.Commands.add('getRecentEmail', function (options: GetEmailOptions) {
   return cy.wrap(getRecentEmail(options));
 });
 
-Cypress.Commands.add('deleteAccount', function () {
-  return cy.wrap(deleteAccount());
+Cypress.Commands.add('deleteAccount', function (accountId: string) {
+  return cy.wrap(deleteAccount(accountId));
 });

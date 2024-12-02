@@ -1,21 +1,22 @@
 import {
-  createInbox,
+  generateEmail,
   getRecentEmail,
   deleteAccount,
   getVerificationCode,
   MessageContent,
+  GeneratedEmail,
 } from '../../../src';
 //! NOTE: replace from '../../src' with 'temp-disposable-email' in your project
 describe('DEMO', () => {
   it('[Custom Command] - Sign up - Check email content and subject', () => {
     // Create a dynamic email address
-    cy.createInbox(`cypress_${Math.random().toString().substr(2, 9)}`).then(
-      (email) => {
+    cy.generateEmail(`cypress_${Math.random().toString().substr(2, 9)}`).then(
+      ({ emailAddress, accountId }) => {
         // Navigate to the sign-up page
         cy.visit('https://app.postdrop.io/signup');
 
         // Fill in the sign-up form
-        cy.get('#email').type(email);
+        cy.get('#email').type(emailAddress);
         cy.get('#password').type('Pass@123');
         cy.get('#name').type('testMMMM');
         cy.get('#company').type('testMMMMc');
@@ -35,20 +36,20 @@ describe('DEMO', () => {
             'please verify your account by clicking the button'
           );
         });
+        cy.deleteAccount(accountId);
       }
     );
-    cy.deleteAccount();
   });
-});
-describe('DEMOs', () => {
   it('[Direct Use] - Sign up - Get Verification code from email', () => {
     // Create a dynamic email address
-    cy.wrap(createInbox()).then((email) => {
+    cy.wrap(generateEmail()).then((email) => {
+      const { emailAddress, accountId } = email as GeneratedEmail;
+
       // Navigate to the playground website
       cy.visit('https://playground.mailslurp.com');
       // Fill in the sign-up form
       cy.get('[data-test="sign-in-create-account-link"]').click();
-      cy.get('input[name="email"]').type(email as string);
+      cy.get('input[name="email"]').type(emailAddress);
       cy.get('input[name="password"]').type('Pass@123');
       cy.get('[data-test="sign-up-create-account-button"]').click();
       cy.get('[data-test="confirm-sign-up-confirmation-code-input"]').should(
@@ -74,9 +75,9 @@ describe('DEMOs', () => {
             cy.get('[data-test="confirm-sign-up-confirm-button"]').click();
             // Verify that the user is redirected to the sign-in page
             cy.contains('Sign in to your account').should('be.visible');
-            cy.wrap(deleteAccount()); //Delete the account
           }
         );
+        cy.wrap(deleteAccount(accountId));
       });
     });
   });
