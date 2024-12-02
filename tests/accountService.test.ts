@@ -33,6 +33,7 @@ describe('accountService', () => {
   });
 
   describe('generateEmail', () => {
+    console.log(BASE_URL);
     it('should create an email and authenticate', async () => {
       const result = await generateEmail();
 
