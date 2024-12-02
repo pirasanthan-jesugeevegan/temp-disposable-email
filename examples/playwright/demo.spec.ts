@@ -1,6 +1,6 @@
 import { test as base, expect } from '@playwright/test';
 import {
-  createInbox,
+  generateEmail,
   getRecentEmail,
   deleteAccount,
   getVerificationCode,
@@ -8,7 +8,7 @@ import {
 //! NOTE: replace from '../../src' with 'temp-disposable-email' in your project
 
 interface EmailHelper {
-  createInbox: typeof createInbox;
+  generateEmail: typeof generateEmail;
   getRecentEmail: typeof getRecentEmail;
   deleteAccount: typeof deleteAccount;
 }
@@ -16,7 +16,7 @@ interface EmailHelper {
 const test = base.extend<{ emailHelper: EmailHelper }>({
   emailHelper: async ({}, use) => {
     const emailHelper = {
-      createInbox,
+      generateEmail,
       getRecentEmail,
       deleteAccount,
     };
@@ -25,16 +25,20 @@ const test = base.extend<{ emailHelper: EmailHelper }>({
 });
 
 test.describe('DEMO', () => {
-  test.afterEach(async () => {
-    await deleteAccount();
+  let accountId: string;
+
+  test.afterEach('CleanUp: delete temp email account', async () => {
+    const res = await deleteAccount(accountId);
+    expect(res).toBe(204);
   });
   test('[Direct Use] - Sign up - Get Verification code from email', async ({
     page,
   }) => {
     // Create a dynamic email address
-    const email = await createInbox(
+    const { emailAddress, accountId: tempAccountId } = await generateEmail(
       `newman${Math.random().toString().substr(2, 9)}`
     );
+    accountId = tempAccountId;
 
     // Navigate to the playground website
     await page.goto('https://playground.mailslurp.com');
@@ -55,7 +59,7 @@ test.describe('DEMO', () => {
 
     // Fill in the sign-up form
     await page.click('[data-test="sign-in-create-account-link"]');
-    await emailInput.fill(email);
+    await emailInput.fill(emailAddress);
     await passwordInput.fill('Pass@123');
     await signUpButton.click();
 
@@ -83,9 +87,11 @@ test.describe('DEMO', () => {
     emailHelper,
   }) => {
     // Create a dynamic email address
-    const email = await emailHelper.createInbox(
-      `newman${Math.random().toString().substr(2, 9)}`
-    );
+    const { emailAddress, accountId: tempAccountId } =
+      await emailHelper.generateEmail(
+        `newman${Math.random().toString().substr(2, 9)}`
+      );
+    accountId = tempAccountId;
 
     // Navigate to the sign-up page
     await page.goto('https://app.postdrop.io/signup');
@@ -104,7 +110,7 @@ test.describe('DEMO', () => {
     });
 
     // Fill in the sign-up form
-    await emailInput.fill(email);
+    await emailInput.fill(emailAddress);
     await passwordInput.fill('Pass@123');
     await nameInput.fill('testMMMM');
     await companyInput.fill('testMMMMc');
