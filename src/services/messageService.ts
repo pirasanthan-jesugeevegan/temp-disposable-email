@@ -121,7 +121,7 @@ export const getRecentEmail = async (
 export const deleteMessage = async (messageId: string): Promise<void> => {
   const token = getToken();
   if (!token)
-    throw new Error('Authentication required. Call createInbox() first.');
+    throw new Error('Authentication required. Call generateEmail() first.');
 
   try {
     await axios.delete(`${BASE_URL}/messages/${messageId}`, {

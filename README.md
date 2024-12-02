@@ -35,7 +35,7 @@ This npm package provides a simple interface for temp email. You can use it to c
 ## Features
 
 - **Create Inbox**: Generate a unique, random email address and create an inbox.
-- **Fetch Messages**: Retrieve the latest messages from the inbox.
+- **Fetch Latest Messages**: Retrieve the latest messages from the inbox.
 - **Read Message Content**: Get the content (HTML and text) of a specific message.
 - **Delete Messages**: Delete a specific message from the inbox.
 - **Delete Account**: Remove the temporary account after usage
@@ -62,7 +62,7 @@ To use the package, import the functions in your TypeScript or JavaScript projec
 
 ```typescript
 import {
-  createInbox,
+  generateEmail,
   getRecentEmail,
   deleteAccount,
 } from 'temp-disposable-email';
@@ -72,7 +72,7 @@ import {
 
 ```javascript
 const {
-  createInbox,
+  generateEmail,
   getRecentEmail,
   deleteAccount,
 } = require('temp-disposable-email');
@@ -80,11 +80,11 @@ const {
 
 ### 2\. Create an Inbox
 
-This function creates a new disposable email account using a random username or a specified one. It also authenticates and generates a token for accessing messages.
+This function creates a new disposable email account using a random username or a specified one.
 
 ```typescript
-const email = await createInbox(); // or pass a custom username
-console.log('Created email address:', email);
+const { emailAddress, accountId } = await generateEmail(); // or pass a custom username
+console.log('Created email address:', emailAddress);
 ```
 
 #### Parameters
@@ -93,7 +93,7 @@ console.log('Created email address:', email);
 
 #### Returns
 
-- `Promise<string>`: The generated email address.
+- `Promise<object>`: An object containing email details like `emailAddress`, and `accountId`.
 
 ### 3\. Fetch Recent Email
 
@@ -114,20 +114,24 @@ console.log('Message received:', message);
 
 #### Returns
 
-- `Promise<object | null>`: An object containing email details like `from`, `to`, `subject`, `intro`, `text`, and `html`.
+- `Promise<object | null>`: An object containing email details like `from`, `to`, `subject`, `intro`, `text`, `html`, `createdAt`, and `updatedAt`.
 
 ### 4\. Delete the Created Account
 
 Once you're done with the email inbox, you can delete the account to clean up resources.
 
 ```typescript
-await deleteAccount();
-console.log('Account deleted');
+const res = await deleteAccount('accountId');
+console.log(res); // status code
 ```
+
+#### Parameters
+
+- `accountId`: `accountId` from `generateEmail()`
 
 #### Returns
 
-- `Promise<void>`: Resolves when the account is successfully deleted.
+- `Promise<number>`: status code.
 
 <p id="example"></p>
 
@@ -147,7 +151,7 @@ Here's a complete example of creating an inbox, retrieving a message, and deleti
 
 ```typescript
 import {
-  createInbox,
+  generateEmail,
   getRecentEmail,
   deleteAccount,
 } from 'temp-disposable-email';
@@ -155,8 +159,8 @@ import {
 async function run() {
   try {
     // Create a new inbox
-    const email = await createInbox();
-    console.log('Created email:', email);
+    const { emailAddress, accountId } = await generateEmail();
+    console.log('Created email:', emailAddress);
 
     // Get the first available message from the inbox
     const message = await getRecentEmail({
@@ -167,8 +171,12 @@ async function run() {
     console.log('Received message:', message);
 
     // Delete the inbox
-    await deleteAccount();
-    console.log('Account deleted successfully');
+    const res = await deleteAccount(accountId);
+    if (res === 204) {
+      console.log('Account deleted successfully');
+    } else {
+      console.log('Account deleted failed');
+    }
   } catch (error) {
     console.error('Error:', error.message);
   }
@@ -181,7 +189,7 @@ run();
 
 ## API Documentation
 
-### `createInbox(username?: string): Promise<string>`
+### `generateEmail(username?: string): Promise<string>`
 
 - **Description**: Creates a disposable inbox with a randomly generated or provided username.
 - **Parameters**:
@@ -198,6 +206,8 @@ run();
 ### `deleteAccount(): Promise<void>`
 
 - **Description**: Deletes the inbox and its associated account.
+- **Parameters**:
+  - `accountId` accountId from `generateEmail()`
 - **Returns**: A promise that resolves when the account is successfully deleted.
 
 ## Get Email Options

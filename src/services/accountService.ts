@@ -19,7 +19,7 @@ export interface GeneratedEmail {
  * @throws {Error} If no domains are available or account creation fails.
  *
  * @example
- * const email = await createInbox("customUser");
+ * const email = await generateEmail("customUser");
  * console.log(email); // Outputs: {"emailAddress": "customUser@mail.tm" ,  "accountId": "1234"}
  */
 
