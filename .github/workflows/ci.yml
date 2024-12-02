@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: echo "$BASE_URL"
       - run: npm run build --if-present
-      - run: npm test:playwright
+      - run: npm run test:playwright
 
   publish:
     runs-on: ubuntu-latest
