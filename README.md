@@ -178,7 +178,7 @@ async function run() {
       console.log('Account deleted failed');
     }
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error:', error);
   }
 }
 
