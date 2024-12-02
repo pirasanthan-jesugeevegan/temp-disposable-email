@@ -1,7 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export { createInbox, deleteAccount } from './services/accountService';
+export { generateEmail, GeneratedEmail } from './services/accountService';
+export { deleteAccount } from './utils/api';
 export {
   getRecentEmail,
   deleteMessage,

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './authService';
 import { BASE_URL } from '../utils/constant';
-import { fetchMessageContent, fetchMessages } from '../utils/api';
+import { getMessagesContent, getMessages } from '../utils/api';
 
 export interface MessageContent {
   from: { address: string };
@@ -9,7 +9,9 @@ export interface MessageContent {
   subject: string;
   intro: string;
   text: string;
-  html: string;
+  html: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 export interface GetEmailOptions {
   maxWaitTime?: number;
@@ -27,6 +29,10 @@ export interface GetEmailOptions {
  * deleted after reading.
  *
  * @param {GetEmailOptions} [options] - Optional settings for polling and deletion.
+ * @param {number} [options.maxWaitTime=30000] - Maximum time to wait for messages (in milliseconds). Default is 30 seconds.
+ * @param {number} [options.waitInterval=2000] - Time interval between polling attempts (in milliseconds). Default is 2 seconds.
+ * @param {boolean} [options.logPolling=false] - Whether to log polling attempts. Default is `false`.
+ * @param {boolean} [options.deleteAfterRead=false] - Whether to delete the message after reading. Default is `false`.
  * @returns {Promise<MessageContent | null>} The email content (sender, recipient, subject, text, HTML), or `null` if no messages are found.
  *
  * @throws {Error} If no messages are available within the polling timeout or authentication fails.
@@ -38,84 +44,59 @@ export interface GetEmailOptions {
 export const getRecentEmail = async (
   options?: GetEmailOptions
 ): Promise<MessageContent | null> => {
-  const token = getToken();
   const {
     maxWaitTime = 30000,
     waitInterval = 2000,
     logPolling = false,
     deleteAfterRead = false,
   } = options || {};
-  if (!token)
-    throw new Error('Authentication required. Call createInbox() first.');
-
-  if (!options) {
-    const messages = await fetchMessages();
-    if (messages.length === 0) throw new Error('No messages available');
-    const messageId = messages[0].id;
-    const { from, to, subject, intro, text, html } = await fetchMessageContent(
-      messageId
-    );
-    if (deleteAfterRead) {
-      await deleteMessage(messageId);
-    }
-    return {
-      from: from.address,
-      to: to[0].address,
-      subject,
-      intro,
-      text,
-      html,
-    };
-  }
 
   const startTime = Date.now();
+  const logger = (message: string) => logPolling && console.log(message);
 
-  if (logPolling) {
-    console.log(
-      `Polling started with a timeout of ${
-        maxWaitTime / 1000
-      }sec and interval of ${waitInterval / 1000}sec.`
-    );
-  }
+  logger(
+    `Polling started with a timeout of ${
+      maxWaitTime / 1000
+    }sec and interval of ${waitInterval / 1000}sec.`
+  );
   while (Date.now() - startTime < maxWaitTime) {
-    const messages = await fetchMessages();
+    const messages = await getMessages();
     if (messages.length > 0) {
-      if (logPolling) {
-        console.log(`Found ${messages.length} message(s), fetching details...`);
-      }
-      const messageId = messages[0].id;
-      if (logPolling) {
-        console.log(`Message retrieved`);
-      }
-      const { from, to, subject, intro, text, html } =
-        await fetchMessageContent(messageId);
+      logger(`Found ${messages.length} message(s), fetching details...`);
+      const sortedMessages = messages.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      const messageId = sortedMessages[0].id;
+
+      logger(`Found ${messageId}`);
+
+      const { from, to, subject, intro, text, html, createdAt, updatedAt } =
+        await getMessagesContent(messageId);
 
       if (deleteAfterRead) {
         await deleteMessage(messageId);
       }
       return {
-        from: from.address,
-        to: to[0].address,
+        from: from,
+        to: to,
         subject,
         intro,
         text,
         html,
+        createdAt,
+        updatedAt,
       };
     }
     await new Promise((resolve) => setTimeout(resolve, waitInterval));
-    if (logPolling) {
-      console.log(
-        `No messages found, waiting for ${waitInterval / 1000} seconds...`
-      );
-    }
+    logger(`No messages found, waiting for ${waitInterval / 1000} seconds...`);
   }
-  if (logPolling) {
-    console.log(
-      `Waiting timeout of ${
-        maxWaitTime / 1000
-      } seconds reached. No messages found.`
-    );
-  }
+  logger(
+    `Waiting timeout of ${
+      maxWaitTime / 1000
+    } seconds reached. No messages found.`
+  );
+
   throw new Error(
     `No messages available within ${maxWaitTime / 1000} seconds timeout`
   );

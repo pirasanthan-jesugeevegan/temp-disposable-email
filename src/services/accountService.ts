@@ -1,39 +1,38 @@
-import axios from 'axios';
-import { authenticate, getToken } from './authService';
+import { authenticate } from './authService';
 import { generateRandomName } from '../utils/generateRandomName';
 import { delay } from '../utils/delay';
-import { BASE_URL } from '../utils/constant';
+import { createAccount, getDomains } from '../utils/api';
 
-let accountId: string | null = null;
+export interface GeneratedEmail {
+  emailAddress: string;
+  accountId: string;
+}
+
 /**
  * Creates a new email inbox with a unique address.
  *
- * This function selects an available domain, generates an email
- * address, and attempts to create an account on the Mail.tm service.
- * If account creation is rate-limited, the function retries with a
- * delay. Upon successful creation, it authenticates the account and
- * stores the token and account ID for future API calls.
+ * This function generates an temp inbox & email address
  *
- * @param {string} [username] - Optional username; a random one is generated if not provided.
- * @returns {Promise<string>} The generated email address.
+ * @param {string} [emailPrefix] - Optional emailPrefix; a random one is generated if not provided.
+ * @returns {Promise<GeneratedEmail>} The generated email address & account ID.
  *
  * @throws {Error} If no domains are available or account creation fails.
  *
  * @example
  * const email = await createInbox("customUser");
- * console.log(email); // Outputs: "customUser@mail.tm"
+ * console.log(email); // Outputs: {"emailAddress": "customUser@mail.tm" ,  "accountId": "1234"}
  */
 
-export const createInbox = async (username?: string): Promise<string> => {
-  const domainsResponse = await axios.get(`${BASE_URL}/domains`, {
-    headers: { accept: 'application/ld+json' },
-  });
-  const domains = domainsResponse.data['hydra:member'].map(
-    (domain: { domain: string }) => domain.domain
-  );
+export const generateEmail = async (
+  emailPrefix?: string
+): Promise<GeneratedEmail> => {
+  const domainsResponse = await getDomains();
+  const domains = domainsResponse
+    .filter((domain: { isActive: boolean }) => domain.isActive)
+    .map((domain: { domain: string }) => domain.domain);
   if (domains.length === 0) throw new Error('No available domains.');
 
-  const emailAddress = `${username || generateRandomName()}@${domains[0]}`;
+  const emailAddress = `${emailPrefix || generateRandomName()}@${domains[0]}`;
   const password = generateRandomName();
 
   let attempts = 0;
@@ -41,19 +40,13 @@ export const createInbox = async (username?: string): Promise<string> => {
 
   while (attempts < maxRetries) {
     try {
-      const accountResponse = await axios.post(
-        `${BASE_URL}/accounts`,
-        { address: emailAddress, password },
-        {
-          headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      accountId = accountResponse.data.id;
+      const accountResponse = await createAccount({
+        address: emailAddress,
+        password,
+      });
+
       await authenticate(emailAddress, password);
-      return emailAddress;
+      return { emailAddress, accountId: accountResponse.id };
     } catch (error: any) {
       if (error.response?.status === 429) {
         attempts++;
@@ -67,37 +60,4 @@ export const createInbox = async (username?: string): Promise<string> => {
     }
   }
   throw new Error('Failed to create account after multiple retries.');
-};
-
-/**
- * Deletes the account created during `createInbox`.
- *
- * This function removes the email account from the Mail.tm service
- * and clears the stored authentication token and account ID.
- * Subsequent API calls requiring authentication will fail until a
- * new account is created.
- *
- * @returns {Promise<void>} Resolves when the account is successfully deleted.
- *
- * @throws {Error} If no account is authenticated or deletion fails.
- *
- * @example
- * await deleteAccount();
- * console.log("Account deleted successfully.");
- */
-export const deleteAccount = async (): Promise<void> => {
-  const token = getToken();
-  if (!token || !accountId) {
-    throw new Error(
-      'Account information missing. Create and authenticate an account first.'
-    );
-  }
-
-  await axios.delete(`${BASE_URL}/accounts/${accountId}`, {
-    headers: {
-      accept: '*/*',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  accountId = null;
 };
