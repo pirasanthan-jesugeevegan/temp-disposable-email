@@ -24,7 +24,7 @@ describe('messageService', () => {
       (getToken as jest.Mock).mockReturnValue(null);
 
       await expect(getRecentEmail()).rejects.toThrow(
-        'Authentication required.'
+        'Failed to fetch messages. Please try again later.'
       );
     });
   });
