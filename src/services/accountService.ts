@@ -26,6 +26,8 @@ export interface GeneratedEmail {
 export const generateEmail = async (
   emailPrefix?: string
 ): Promise<GeneratedEmail> => {
+  console.log(process.env.BASE_URL);
+
   const domainsResponse = await getDomains();
   const domains = domainsResponse
     .filter((domain: { isActive: boolean }) => domain.isActive)
