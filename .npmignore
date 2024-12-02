@@ -5,3 +5,7 @@ README.md
 dist
 tests
 examples
+cypress.config.ts
+jest.config.js
+playwright.config.ts
+src
