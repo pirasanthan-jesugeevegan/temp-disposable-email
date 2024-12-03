@@ -61,21 +61,13 @@ To use the package, import the functions in your TypeScript or JavaScript projec
 #### Using ES Modules (Recommended)
 
 ```typescript
-import {
-  generateEmail,
-  getRecentEmail,
-  deleteAccount,
-} from 'temp-disposable-email';
+import { generateEmail, getRecentEmail } from 'temp-disposable-email';
 ```
 
 #### Using CommonJS
 
 ```javascript
-const {
-  generateEmail,
-  getRecentEmail,
-  deleteAccount,
-} = require('temp-disposable-email');
+const { generateEmail, getRecentEmail } = require('temp-disposable-email');
 ```
 
 ### 2\. Create an Inbox
@@ -116,23 +108,6 @@ console.log('Message received:', message);
 
 - `Promise<object | null>`: An object containing email details like `from`, `to`, `subject`, `intro`, `text`, `html`, `createdAt`, and `updatedAt`.
 
-### 4\. Delete the Created Account
-
-Once you're done with the email inbox, you can delete the account to clean up resources.
-
-```typescript
-const res = await deleteAccount('accountId');
-console.log(res); // status code
-```
-
-#### Parameters
-
-- `accountId`: `accountId` from `generateEmail()`
-
-#### Returns
-
-- `Promise<number>`: status code.
-
 <p id="example"></p>
 
 ## Example Workflow
@@ -150,16 +125,12 @@ For using temp-disposable-email with Cypress, see the example in the [Cypress fo
 Here's a complete example of creating an inbox, retrieving a message, and deleting the account:
 
 ```typescript
-import {
-  generateEmail,
-  getRecentEmail,
-  deleteAccount,
-} from 'temp-disposable-email';
+import { generateEmail, getRecentEmail } from 'temp-disposable-email';
 
 async function run() {
   try {
     // Create a new inbox
-    const { emailAddress, accountId } = await generateEmail();
+    const { emailAddress } = await generateEmail();
     console.log('Created email:', emailAddress);
 
     // Get the first available message from the inbox
@@ -169,14 +140,6 @@ async function run() {
       logPolling: true,
     });
     console.log('Received message:', message);
-
-    // Delete the inbox
-    const res = await deleteAccount(accountId);
-    if (res === 204) {
-      console.log('Account deleted successfully');
-    } else {
-      console.log('Account deleted failed');
-    }
   } catch (error) {
     console.error('Error:', error);
   }
@@ -202,13 +165,6 @@ run();
 - **Parameters**:
   - `options` (Optional): Polling configuration for waiting for messages. See GetEmailOptions.
 - **Returns**: A promise that resolves to the message content (or `null` if no messages are found).
-
-### `deleteAccount(): Promise<void>`
-
-- **Description**: Deletes the inbox and its associated account.
-- **Parameters**:
-  - `accountId` accountId from `generateEmail()`
-- **Returns**: A promise that resolves when the account is successfully deleted.
 
 ## Get Email Options
 
