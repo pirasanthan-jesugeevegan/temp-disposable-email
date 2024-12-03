@@ -1,16 +1,10 @@
 import { test as base, expect } from '@playwright/test';
-import {
-  generateEmail,
-  getRecentEmail,
-  deleteAccount,
-  getVerificationCode,
-} from '../../src';
+import { generateEmail, getRecentEmail, getVerificationCode } from '../../src';
 //! NOTE: replace from '../../src' with 'temp-disposable-email' in your project
 
 interface EmailHelper {
   generateEmail: typeof generateEmail;
   getRecentEmail: typeof getRecentEmail;
-  deleteAccount: typeof deleteAccount;
 }
 
 const test = base.extend<{ emailHelper: EmailHelper }>({
@@ -18,27 +12,19 @@ const test = base.extend<{ emailHelper: EmailHelper }>({
     const emailHelper = {
       generateEmail,
       getRecentEmail,
-      deleteAccount,
     };
     await use(emailHelper);
   },
 });
 
 test.describe('DEMO', () => {
-  let accountId: string;
-
-  test.afterEach('CleanUp: delete temp email account', async () => {
-    const res = await deleteAccount(accountId);
-    expect(res).toBe(204);
-  });
   test('[Direct Use] - Sign up - Get Verification code from email', async ({
     page,
   }) => {
     // Create a dynamic email address
-    const { emailAddress, accountId: tempAccountId } = await generateEmail(
+    const { emailAddress } = await generateEmail(
       `newman${Math.random().toString().substr(2, 9)}`
     );
-    accountId = tempAccountId;
 
     // Navigate to the playground website
     await page.goto('https://playground.mailslurp.com');
@@ -87,11 +73,9 @@ test.describe('DEMO', () => {
     emailHelper,
   }) => {
     // Create a dynamic email address
-    const { emailAddress, accountId: tempAccountId } =
-      await emailHelper.generateEmail(
-        `newman${Math.random().toString().substr(2, 9)}`
-      );
-    accountId = tempAccountId;
+    const { emailAddress } = await emailHelper.generateEmail(
+      `newman${Math.random().toString().substr(2, 9)}`
+    );
 
     // Navigate to the sign-up page
     await page.goto('https://app.postdrop.io/signup');
