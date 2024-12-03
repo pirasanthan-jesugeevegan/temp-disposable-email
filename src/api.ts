@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { BASE_URL } from './constant';
-import { getToken } from '../services/authService';
 
 interface EmailAccount {
   id: string;
@@ -78,9 +76,28 @@ interface EmailResource {
   updatedAt: string;
   accountId: string;
 }
-
+let token: string | null = null;
+const apiClient = axios.create({
+  baseURL: process.env.BASE_URL || 'https://api.mail.tm',
+  headers: { accept: 'application/json' },
+});
+export const authenticate = async (
+  email: string,
+  password: string
+): Promise<void> => {
+  const response = await apiClient.post(
+    '/token',
+    { address: email, password },
+    {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  token = response.data.token;
+};
 export const getAuthHeaders = () => {
-  const token = getToken();
   if (!token) {
     throw new Error('Authentication required. Token not found.');
   }
@@ -92,7 +109,7 @@ export const getAuthHeaders = () => {
 
 export const getDomains = async (): Promise<ListOfDomains[]> => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/domains`, {
+    const { data } = await apiClient.get('/domains', {
       headers: { accept: 'application/json' },
     });
     return data;
@@ -104,7 +121,7 @@ export const getDomains = async (): Promise<ListOfDomains[]> => {
 
 export const getMessages = async (): Promise<EmailObject[]> => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/messages`, {
+    const { data } = await apiClient.get('/messages', {
       headers: getAuthHeaders(),
     });
     return data;
@@ -118,7 +135,7 @@ export const getMessagesContent = async (
   messageId: string
 ): Promise<EmailResource> => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/messages/${messageId}`, {
+    const { data } = await apiClient.get(`/messages/${messageId}`, {
       headers: getAuthHeaders(),
     });
     return data;
@@ -133,8 +150,8 @@ export const getMessageAttachments = async (
   attachmentsId: string
 ): Promise<any> => {
   try {
-    const { data } = await axios.get(
-      `${BASE_URL}/messages/${messageId}/attachment/${attachmentsId}`,
+    const { data } = await apiClient.get(
+      `/messages/${messageId}/attachment/${attachmentsId}`,
       {
         headers: getAuthHeaders(),
       }
@@ -151,7 +168,7 @@ export const getMessageAttachments = async (
 
 export const deleteMessage = async (messageId: string): Promise<number> => {
   try {
-    const { status } = await axios.delete(`${BASE_URL}/messages/${messageId}`, {
+    const { status } = await apiClient.delete(`/messages/${messageId}`, {
       headers: getAuthHeaders(),
     });
     return status;
@@ -165,26 +182,15 @@ export const createAccount = async (payload: {
   address: string;
   password: string;
 }): Promise<EmailAccount> => {
-  const { data } = await axios.post(`${BASE_URL}/accounts`, payload, {
+  const { data } = await apiClient.post(`/accounts`, payload, {
     headers: { accept: 'application/json' },
   });
   return data;
 };
 
-/**
- * Deletes the account created during `generateEmail`.
- *
- * @returns {Promise<number>} status code of 204 when the account is successfully deleted.
- *
- * @throws {Error} If no account is authenticated or deletion fails.
- *
- * @example
- * await deleteAccount();
- * console.log("Account deleted successfully.");
- */
 export const deleteAccount = async (accountId: string): Promise<number> => {
   try {
-    const { status } = await axios.delete(`${BASE_URL}/accounts/${accountId}`, {
+    const { status } = await apiClient.delete(`/accounts/${accountId}`, {
       headers: getAuthHeaders(),
     });
     return status;
