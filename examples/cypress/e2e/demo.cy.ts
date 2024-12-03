@@ -1,7 +1,6 @@
 import {
   generateEmail,
   getRecentEmail,
-  deleteAccount,
   getVerificationCode,
   MessageContent,
   GeneratedEmail,
@@ -11,7 +10,7 @@ describe('DEMO', () => {
   it('[Custom Command] - Sign up - Check email content and subject', () => {
     // Create a dynamic email address
     cy.generateEmail(`cypress_${Math.random().toString().substr(2, 9)}`).then(
-      ({ emailAddress, accountId }) => {
+      ({ emailAddress }) => {
         // Navigate to the sign-up page
         cy.visit('https://app.postdrop.io/signup');
 
@@ -36,14 +35,13 @@ describe('DEMO', () => {
             'please verify your account by clicking the button'
           );
         });
-        cy.deleteAccount(accountId);
       }
     );
   });
   it('[Direct Use] - Sign up - Get Verification code from email', () => {
     // Create a dynamic email address
     cy.wrap(generateEmail()).then((email) => {
-      const { emailAddress, accountId } = email as GeneratedEmail;
+      const { emailAddress } = email as GeneratedEmail;
 
       // Navigate to the playground website
       cy.visit('https://playground.mailslurp.com');
@@ -77,7 +75,6 @@ describe('DEMO', () => {
             cy.contains('Sign in to your account').should('be.visible');
           }
         );
-        cy.wrap(deleteAccount(accountId));
       });
     });
   });
