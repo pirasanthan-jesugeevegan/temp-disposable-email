@@ -53,7 +53,6 @@ const generateRandomName = (): string =>
  * const email = await generateEmail("customUser");
  * console.log(email); // Outputs: {"emailAddress": "customUser@mail.tm" ,  "accountId": "1234"}
  */
-
 export const generateEmail = async (
   emailPrefix?: string
 ): Promise<GeneratedEmail> => {
@@ -77,7 +76,7 @@ export const generateEmail = async (
       return { emailAddress, accountId: accountResponse.id };
     } catch (error: any) {
       if (error.response?.status === 429) {
-        await delay(10 * 1000);
+        await delay(5 * 1000);
       } else {
         throw error;
       }
@@ -87,11 +86,6 @@ export const generateEmail = async (
 
 /**
  * Retrieves the latest message from the inbox.
- *
- * If messages are available, this function fetches the first one and
- * returns its details. Polling options can be specified to wait for
- * messages if the inbox is empty. Optionally, the message can be
- * deleted after reading.
  *
  * @param {GetEmailOptions} [options] - Optional settings for polling and deletion.
  * @param {number} [options.maxWaitTime=30000] - Maximum time to wait for messages (in milliseconds). Default is 30 seconds.
