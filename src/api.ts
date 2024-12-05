@@ -147,7 +147,10 @@ export const getMessagesContent = async (
     });
     return data;
   } catch (error) {
-    console.error(`Error fetching message content for ID ${messageId}:`, error);
+    console.error(
+      `Error fetching message content for ID ${messageId}:`,
+      error.message
+    );
     throw new Error('Failed to fetch message content. Please try again later.');
   }
 };
