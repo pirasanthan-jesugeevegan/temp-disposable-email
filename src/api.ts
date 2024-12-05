@@ -79,7 +79,7 @@ interface EmailResource {
 }
 let token: string | null = null;
 const apiClient = axios.create({
-  baseURL: process.env.BASE_URL || 'https://api.mail.tm',
+  baseURL: 'https://api.mail.tm',
   headers: { accept: 'application/json' },
 });
 export const authenticate = async (
