@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { delay } from '.';
 
 interface EmailAccount {
   id: string;
@@ -120,14 +121,20 @@ export const getDomains = async (): Promise<ListOfDomains[]> => {
 };
 
 export const getMessages = async (): Promise<EmailObject[]> => {
-  try {
-    const { data } = await apiClient.get('/messages', {
-      headers: getAuthHeaders(),
-    });
-    return data;
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-    throw new Error('Failed to fetch messages. Please try again later.');
+  while (true) {
+    try {
+      const { data } = await apiClient.get('/messages?page=1', {
+        headers: getAuthHeaders(),
+      });
+      return data;
+    } catch (error: any) {
+      if (error.response?.status === 429) {
+        await delay(10 * 1000);
+      } else {
+        console.error('Error fetching messages:', error);
+        throw new Error('Failed to fetch messages. Please try again later.');
+      }
+    }
   }
 };
 

@@ -34,7 +34,7 @@ export interface GetEmailOptions {
   deleteAfterRead?: boolean;
 }
 
-const delay = (ms: number): Promise<void> =>
+export const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 const generateRandomName = (): string =>
   Math.random().toString(36).substring(2, 15);
@@ -66,10 +66,7 @@ export const generateEmail = async (
   const emailAddress = `${emailPrefix || generateRandomName()}@${domains[0]}`;
   const password = generateRandomName();
 
-  let attempts = 0;
-  const maxRetries = 5;
-
-  while (attempts < maxRetries) {
+  while (true) {
     try {
       const accountResponse = await createAccount({
         address: emailAddress,
@@ -80,17 +77,12 @@ export const generateEmail = async (
       return { emailAddress, accountId: accountResponse.id };
     } catch (error: any) {
       if (error.response?.status === 429) {
-        attempts++;
-        const retryAfter = error.response.headers['retry-after']
-          ? parseInt(error.response.headers['retry-after'])
-          : 5;
-        await delay(retryAfter * 1000);
+        await delay(10 * 1000);
       } else {
         throw error;
       }
     }
   }
-  throw new Error('Failed to create account after multiple retries.');
 };
 
 /**
