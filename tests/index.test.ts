@@ -112,6 +112,7 @@ describe('Email Utils Tests', () => {
       text: 'Email content',
       createdAt: '2024-01-02T00:00:00Z',
       updatedAt: '2024-01-02T00:00:00Z',
+      attachments: [],
     });
   });
 
