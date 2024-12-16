@@ -1,4 +1,4 @@
-import { authenticate, getMessageAttachments } from './api';
+import { authenticate } from './api';
 import {
   createAccount,
   deleteAccount,
@@ -23,11 +23,6 @@ export interface MessageContent {
   html: string[];
   createdAt: string;
   updatedAt: string;
-  attachments: Attachment[];
-}
-interface Attachment {
-  title: string;
-  data: Buffer;
 }
 export interface GetEmailOptions {
   maxWaitTime?: number;
@@ -132,28 +127,9 @@ export const getRecentEmail = async (
 
       logger(`Found ${messageId}`);
 
-      const {
-        from,
-        to,
-        subject,
-        intro,
-        text,
-        html,
-        createdAt,
-        updatedAt,
-        hasAttachments,
-        attachments,
-      } = await getMessagesContent(messageId);
+      const { from, to, subject, intro, text, html, createdAt, updatedAt } =
+        await getMessagesContent(messageId);
 
-      const attachmentArray: Array<{ title: string; data: Buffer }> = [];
-      if (hasAttachments) {
-        for (const { id, filename } of attachments) {
-          logger(`Fetching attachment ID: ${id}`);
-          const attachmentData = await getMessageAttachments(messageId, id);
-
-          attachmentArray.push({ title: filename, data: attachmentData });
-        }
-      }
       if (deleteAfterRead) {
         await deleteMessage(messageId);
       }
@@ -168,7 +144,6 @@ export const getRecentEmail = async (
         html,
         createdAt,
         updatedAt,
-        attachments: attachmentArray,
       };
     }
     await new Promise((resolve) => setTimeout(resolve, waitInterval));
