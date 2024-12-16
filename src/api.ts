@@ -163,6 +163,7 @@ export const getMessageAttachments = async (
     const { data } = await apiClient.get(
       `/messages/${messageId}/attachment/${attachmentsId}`,
       {
+        responseType: 'arraybuffer',
         headers: getAuthHeaders(),
       }
     );
