@@ -130,8 +130,8 @@ describe('Email Utils Tests', () => {
   });
 
   it('should delete an account after processing emails', async () => {
-    mockedDeleteAccount.mockResolvedValueOnce(204);
-    await expect(deleteAccount('account1')).resolves.toBe(204);
+    mockedDeleteAccount.mockResolvedValueOnce();
+    await expect(deleteAccount('account1')).resolves.toBe(undefined);
     expect(mockedDeleteAccount).toHaveBeenCalledWith('account1');
   });
 });
