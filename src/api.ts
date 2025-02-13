@@ -236,7 +236,7 @@ export const deleteMessage = async (messageId: string): Promise<number> => {
 export const createAccount = async (
   payload: { address: string; password: string },
   maxRetries = 5,
-  delayMs = 7000
+  delayMs = 6000
 ): Promise<EmailAccount> => {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
