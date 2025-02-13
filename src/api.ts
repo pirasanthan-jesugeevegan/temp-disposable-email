@@ -224,11 +224,10 @@ export const deleteMessage = async (messageId: string): Promise<number> => {
     });
     return status;
   } catch (error: any) {
-    console.error(
+    console.warn(
       `Error deleting message for ID ${messageId}:`,
       error.response?.data
     );
-    throw new Error('Failed to delete message. Please try again later.');
   }
 };
 
@@ -243,17 +242,27 @@ export const createAccount = async (
       const { data } = await apiClient.post('/accounts', payload, {
         headers: { accept: 'application/json' },
       });
+
       return data;
     } catch (error: any) {
-      if (attempt < maxRetries) {
-        await delay(delayMs);
+      if (error.response?.status !== 201) {
+        if (attempt < maxRetries) {
+          await delay(maxRetries * delayMs);
+        } else {
+          console.log(
+            'Max retries reached. Could not create account.',
+            error.response.status
+          );
+          throw new Error(
+            'Failed to create account after multiple attempts.',
+            error.response.status
+          );
+        }
       } else {
-        console.error('Max retries reached. Could not create account.');
-        throw new Error('Failed to create account after multiple attempts.');
+        throw error.response.status;
       }
     }
   }
-  throw new Error('Unexpected error in createAccount function.');
 };
 
 // Function to delete an account
