@@ -99,16 +99,7 @@ export const authenticate = async (
 ): Promise<void> => {
   email = _email;
   password = _password;
-  const response = await apiClient.post(
-    '/token',
-    { address: email, password },
-    {
-      headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await apiClient.post('/token', { address: email, password });
   token = response.data.token;
 };
 
@@ -133,7 +124,6 @@ apiClient.interceptors.response.use(
         error.config.headers = getAuthHeaders(); // Update headers with new token
         return apiClient.request(error.config as AxiosRequestConfig); // Retry request
       } catch (authError) {
-        console.error('Failed to refresh token:', authError);
         throw new Error('Authentication failed. Please check credentials.');
       }
     }
@@ -149,7 +139,6 @@ export const getDomains = async (): Promise<ListOfDomains[]> => {
     });
     return data;
   } catch (error: any) {
-    console.error('Error fetching domains:', error.response?.data);
     throw new Error('Failed to fetch domains. Please try again later.');
   }
 };
@@ -166,7 +155,6 @@ export const getMessages = async (): Promise<EmailObject[]> => {
       if (error.response?.status === 429) {
         await delay(10 * 1000);
       } else {
-        console.error('Error fetching messages:', error.response?.data);
         throw new Error('Failed to fetch messages. Please try again later.');
       }
     }
@@ -183,10 +171,6 @@ export const getMessagesContent = async (
     });
     return data;
   } catch (error: any) {
-    console.error(
-      `Error fetching message content for ID ${messageId}:`,
-      error.response?.data
-    );
     throw new Error('Failed to fetch message content. Please try again later.');
   }
 };
@@ -206,10 +190,6 @@ export const getMessageAttachments = async (
     );
     return data;
   } catch (error: any) {
-    console.error(
-      `Error fetching message attachment for ID ${messageId}:`,
-      error.response?.data
-    );
     throw new Error(
       'Failed to fetch message attachment. Please try again later.'
     );
@@ -217,7 +197,7 @@ export const getMessageAttachments = async (
 };
 
 // Function to delete a message
-export const deleteMessage = async (messageId: string): Promise<number> => {
+export const deleteMessage = async (messageId: string): Promise<any> => {
   try {
     const { status } = await apiClient.delete(`/messages/${messageId}`, {
       headers: getAuthHeaders(),
@@ -234,35 +214,40 @@ export const deleteMessage = async (messageId: string): Promise<number> => {
 // Function to create an email account
 export const createAccount = async (
   payload: { address: string; password: string },
-  maxRetries = 5,
-  delayMs = 6000
+  maxRetries = 10, // Increased retry attempts
+  delayMs = 6000,
+  infiniteRetry = false // Optional: Keep retrying forever
 ): Promise<EmailAccount> => {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+  let attempt = 1;
+
+  while (attempt <= maxRetries || infiniteRetry) {
     try {
       const { data } = await apiClient.post('/accounts', payload, {
         headers: { accept: 'application/json' },
       });
-
       return data;
     } catch (error: any) {
-      if (error.response?.status !== 201) {
-        if (attempt < maxRetries) {
-          await delay(maxRetries * delayMs);
-        } else {
-          console.log(
-            'Max retries reached. Could not create account.',
-            error.response.status
-          );
-          throw new Error(
-            'Failed to create account after multiple attempts.',
-            error.response.status
-          );
-        }
+      const status = error.response?.status;
+      const isNetworkError = error.code === 'ECONNABORTED' || !error.response;
+
+      if (status === 409 || status === 422) {
+        payload.address = `${Date.now()}-${Math.floor(
+          Math.random() * 100000
+        )}@e-record.com`;
+      } else if (status === 429) {
+        await delay(30000);
+      } else if (status === 500 || isNetworkError) {
+        const waitTime = Math.min(30000, delayMs * attempt);
+        await delay(waitTime);
       } else {
-        throw error.response.status;
+        throw error;
       }
+
+      attempt++;
     }
   }
+
+  throw new Error('🚨 Max retries reached. Account creation failed.');
 };
 
 // Function to delete an account
@@ -271,7 +256,6 @@ export const deleteAccount = async (accountId: string): Promise<void> => {
     await apiClient.delete(`/accounts/${accountId}`, {
       headers: getAuthHeaders(),
     });
-    console.log(`Account ${accountId} deleted successfully.`);
   } catch (error: any) {
     console.warn(`Failed to delete account ${accountId}, ignoring error.`);
   }
