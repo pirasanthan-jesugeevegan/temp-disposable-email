@@ -123,7 +123,7 @@ apiClient.interceptors.response.use(
         await authenticate(email, password); // Get a new token
         error.config.headers = getAuthHeaders(); // Update headers with new token
         return apiClient.request(error.config as AxiosRequestConfig); // Retry request
-      } catch (authError) {
+      } catch (_authError) {
         throw new Error('Authentication failed. Please check credentials.');
       }
     }
@@ -138,27 +138,43 @@ export const getDomains = async (): Promise<ListOfDomains[]> => {
       headers: { accept: 'application/json' },
     });
     return data;
-  } catch (error: any) {
+  } catch (_error) {
     throw new Error('Failed to fetch domains. Please try again later.');
   }
 };
 
-// Function to fetch messages
-export const getMessages = async (): Promise<EmailObject[]> => {
-  while (true) {
+// Function to fetch messages with retry logic and timeout
+export const getMessages = async (
+  maxRetries = 5,
+  retryDelay = 10000
+): Promise<EmailObject[]> => {
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
     try {
       const { data } = await apiClient.get('/messages?page=1', {
         headers: getAuthHeaders(),
       });
       return data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      if (error.response?.status === 429) {
-        await delay(10 * 1000);
+      attempt++;
+      if (error.response?.status === 429 && attempt < maxRetries) {
+        console.warn(
+          `Rate limited. Retrying in ${retryDelay / 1000}s... (Attempt ${attempt}/${maxRetries})`
+        );
+        await delay(retryDelay);
+      } else if (attempt >= maxRetries) {
+        throw new Error(
+          `Failed to fetch messages after ${maxRetries} attempts. Please try again later.`
+        );
       } else {
         throw new Error('Failed to fetch messages. Please try again later.');
       }
     }
   }
+
+  throw new Error('Failed to fetch messages after maximum retries.');
 };
 
 // Function to fetch message content
@@ -170,7 +186,7 @@ export const getMessagesContent = async (
       headers: getAuthHeaders(),
     });
     return data;
-  } catch (error: any) {
+  } catch (_error) {
     throw new Error('Failed to fetch message content. Please try again later.');
   }
 };
@@ -179,7 +195,7 @@ export const getMessagesContent = async (
 export const getMessageAttachments = async (
   messageId: string,
   attachmentsId: string
-): Promise<any> => {
+): Promise<Buffer> => {
   try {
     const { data } = await apiClient.get(
       `/messages/${messageId}/attachment/${attachmentsId}`,
@@ -189,7 +205,7 @@ export const getMessageAttachments = async (
       }
     );
     return data;
-  } catch (error: any) {
+  } catch (_error) {
     throw new Error(
       'Failed to fetch message attachment. Please try again later.'
     );
@@ -197,24 +213,23 @@ export const getMessageAttachments = async (
 };
 
 // Function to delete a message
-export const deleteMessage = async (messageId: string): Promise<any> => {
+export const deleteMessage = async (messageId: string): Promise<number> => {
   try {
     const { status } = await apiClient.delete(`/messages/${messageId}`, {
       headers: getAuthHeaders(),
     });
     return status;
-  } catch (error: any) {
-    console.warn(
-      `Error deleting message for ID ${messageId}:`,
-      error.response?.data
-    );
+  } catch (_error) {
+    console.warn(`Error deleting message for ID ${messageId}`);
+    return 0;
   }
 };
 
 // Function to create an email account
 export const createAccount = async (
   payload: { address: string; password: string },
-  maxRetries = 10, // Increased retry attempts
+  domain?: string, // Domain to use for fallback email generation
+  maxRetries = 10,
   delayMs = 6000,
   infiniteRetry = false // Optional: Keep retrying forever
 ): Promise<EmailAccount> => {
@@ -226,18 +241,30 @@ export const createAccount = async (
         headers: { accept: 'application/json' },
       });
       return data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const status = error.response?.status;
       const isNetworkError = error.code === 'ECONNABORTED' || !error.response;
 
       if (status === 409 || status === 422) {
+        // Use provided domain or extract from original address
+        const domainToUse = domain || payload.address.split('@')[1];
         payload.address = `${Date.now()}-${Math.floor(
           Math.random() * 100000
-        )}@e-record.com`;
+        )}@${domainToUse}`;
+        console.warn(
+          `Address already exists or invalid. Retrying with: ${payload.address}`
+        );
       } else if (status === 429) {
+        console.warn(
+          `Rate limited. Waiting 30 seconds before retry... (Attempt ${attempt}/${maxRetries})`
+        );
         await delay(30000);
       } else if (status === 500 || isNetworkError) {
         const waitTime = Math.min(30000, delayMs * attempt);
+        console.warn(
+          `Server error or network issue. Waiting ${waitTime / 1000}s... (Attempt ${attempt}/${maxRetries})`
+        );
         await delay(waitTime);
       } else {
         throw error;
@@ -256,7 +283,7 @@ export const deleteAccount = async (accountId: string): Promise<void> => {
     await apiClient.delete(`/accounts/${accountId}`, {
       headers: getAuthHeaders(),
     });
-  } catch (error: any) {
+  } catch (_error) {
     console.warn(`Failed to delete account ${accountId}, ignoring error.`);
   }
 };

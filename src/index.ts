@@ -8,8 +8,6 @@ import {
   getMessagesContent,
 } from './api';
 
-let accountId: string;
-
 export interface GeneratedEmail {
   emailAddress: string;
   accountId: string;
@@ -25,7 +23,7 @@ export interface MessageContent {
   updatedAt: string;
   attachments: Attachment[];
 }
-interface Attachment {
+export interface Attachment {
   title: string;
   data: Buffer;
 }
@@ -34,12 +32,16 @@ export interface GetEmailOptions {
   waitInterval?: number;
   logPolling?: boolean;
   deleteAfterRead?: boolean;
+  accountId?: string; // Optional for backward compatibility
 }
 
-export const delay = (ms: number): Promise<void> =>
+const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 const generateRandomName = (): string =>
   Math.random().toString(36).substring(2, 15);
+
+// Export delay for testing purposes
+export { delay };
 
 /**
  * Creates a new email inbox with a unique address.
@@ -67,15 +69,19 @@ export const generateEmail = async (
   const emailAddress = `${emailPrefix || generateRandomName()}@${domains[0]}`;
   const password = generateRandomName();
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      const accountResponse = await createAccount({
-        address: emailAddress,
-        password,
-      });
-      accountId = accountResponse.id;
+      const accountResponse = await createAccount(
+        {
+          address: emailAddress,
+          password,
+        },
+        domains[0] // Pass the first active domain for fallback
+      );
       await authenticate(emailAddress, password);
       return { emailAddress, accountId: accountResponse.id };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.response?.status === 429) {
         await delay(5 * 1000);
@@ -90,6 +96,7 @@ export const generateEmail = async (
  * Retrieves the latest message from the inbox.
  *
  * @param {GetEmailOptions} [options] - Optional settings for polling and deletion.
+ * @param {string} [options.accountId] - Account ID to cleanup after reading. If not provided, account won't be deleted.
  * @param {number} [options.maxWaitTime=30000] - Maximum time to wait for messages (in milliseconds). Default is 30 seconds.
  * @param {number} [options.waitInterval=2000] - Time interval between polling attempts (in milliseconds). Default is 2 seconds.
  * @param {boolean} [options.logPolling=false] - Whether to log polling attempts. Default is `false`.
@@ -99,7 +106,8 @@ export const generateEmail = async (
  * @throws {Error} If no messages are available within the polling timeout or authentication fails.
  *
  * @example
- * const message = await getRecentEmail({ maxWaitTime: 5000, waitInterval: 1000, logPolling: true });
+ * const { accountId } = await generateEmail();
+ * const message = await getRecentEmail({ accountId, maxWaitTime: 5000, waitInterval: 1000, logPolling: true });
  * console.log(message.subject); // Outputs: "Hello!"
  */
 export const getRecentEmail = async (
@@ -110,6 +118,7 @@ export const getRecentEmail = async (
     waitInterval = 2000,
     logPolling = false,
     deleteAfterRead = false,
+    accountId,
   } = options || {};
 
   const startTime = Date.now();
@@ -120,70 +129,81 @@ export const getRecentEmail = async (
       maxWaitTime / 1000
     }sec and interval of ${waitInterval / 1000}sec.`
   );
-  while (Date.now() - startTime < maxWaitTime) {
-    const messages = await getMessages();
-    if (messages.length > 0) {
-      logger(`Found ${messages.length} message(s), fetching details...`);
-      const sortedMessages = messages.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-      const messageId = sortedMessages[0].id;
 
-      logger(`Found ${messageId}`);
+  try {
+    while (Date.now() - startTime < maxWaitTime) {
+      const messages = await getMessages();
+      if (messages.length > 0) {
+        logger(`Found ${messages.length} message(s), fetching details...`);
+        // Sort by newest first (descending order)
+        const sortedMessages = messages.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        const messageId = sortedMessages[0].id;
 
-      const {
-        from,
-        to,
-        subject,
-        intro,
-        text,
-        html,
-        createdAt,
-        updatedAt,
-        hasAttachments,
-        attachments,
-      } = await getMessagesContent(messageId);
+        logger(`Found ${messageId}`);
 
-      const attachmentArray: Array<{ title: string; data: Buffer }> = [];
-      if (hasAttachments) {
-        for (const { id, filename } of attachments) {
-          logger(`Fetching attachment ID: ${id}`);
-          const attachmentData = await getMessageAttachments(messageId, id);
+        const {
+          from,
+          to,
+          subject,
+          intro,
+          text,
+          html,
+          createdAt,
+          updatedAt,
+          hasAttachments,
+          attachments,
+        } = await getMessagesContent(messageId);
 
-          attachmentArray.push({ title: filename, data: attachmentData });
+        const attachmentArray: Array<{ title: string; data: Buffer }> = [];
+        if (hasAttachments) {
+          for (const { id, filename } of attachments) {
+            logger(`Fetching attachment ID: ${id}`);
+            const attachmentData = await getMessageAttachments(messageId, id);
+
+            attachmentArray.push({ title: filename, data: attachmentData });
+          }
         }
-      }
-      if (deleteAfterRead) {
-        await deleteMessage(messageId);
-      }
-      await deleteAccount(accountId);
+        if (deleteAfterRead) {
+          await deleteMessage(messageId);
+          logger(`Deleted message ${messageId}`);
+        }
 
-      return {
-        from: from,
-        to: to,
-        subject,
-        intro,
-        text,
-        html,
-        createdAt,
-        updatedAt,
-        attachments: attachmentArray,
-      };
+        return {
+          from: from,
+          to: to,
+          subject,
+          intro,
+          text,
+          html,
+          createdAt,
+          updatedAt,
+          attachments: attachmentArray,
+        };
+      }
+      await new Promise((resolve) => setTimeout(resolve, waitInterval));
+      logger(
+        `No messages found, waiting for ${waitInterval / 1000} seconds...`
+      );
     }
-    await new Promise((resolve) => setTimeout(resolve, waitInterval));
-    logger(`No messages found, waiting for ${waitInterval / 1000} seconds...`);
-  }
-  logger(
-    `Waiting timeout of ${
-      maxWaitTime / 1000
-    } seconds reached. No messages found.`
-  );
-  await deleteAccount(accountId);
+    logger(
+      `Waiting timeout of ${
+        maxWaitTime / 1000
+      } seconds reached. No messages found.`
+    );
 
-  throw new Error(
-    `No messages available within ${maxWaitTime / 1000} seconds timeout`
-  );
+    throw new Error(
+      `No messages available within ${maxWaitTime / 1000} seconds timeout`
+    );
+  } finally {
+    // Cleanup account if accountId is provided
+    if (accountId) {
+      await deleteAccount(accountId);
+      logger(`Deleted account ${accountId}`);
+    }
+  }
 };
 
 /**
@@ -206,6 +226,11 @@ export const getVerificationCode = async (
   text: string | undefined
 ): Promise<string> => {
   console.log('Extracting the verification code from the email content...');
+
+  if (!text) {
+    throw new Error('No text provided to extract verification code from.');
+  }
+
   const matches = text.match(/\b\d{5,}\b/);
   if (matches) {
     return matches[0];

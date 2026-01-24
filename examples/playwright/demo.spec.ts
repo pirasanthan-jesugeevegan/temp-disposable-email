@@ -22,7 +22,7 @@ test.describe('DEMO', () => {
     page,
   }) => {
     // Create a dynamic email address
-    const { emailAddress } = await generateEmail(
+    const { emailAddress, accountId } = await generateEmail(
       `newman${Math.random().toString().substr(2, 9)}`
     );
 
@@ -54,6 +54,7 @@ test.describe('DEMO', () => {
 
     // Fetch the verification code from the email
     const mailbox = await getRecentEmail({
+      accountId, // Pass accountId for proper cleanup
       maxWaitTime: 80000,
       waitInterval: 1000,
       deleteAfterRead: true,
@@ -73,7 +74,7 @@ test.describe('DEMO', () => {
     emailHelper,
   }) => {
     // Create a dynamic email address
-    const { emailAddress } = await emailHelper.generateEmail(
+    const { emailAddress, accountId } = await emailHelper.generateEmail(
       `newman${Math.random().toString().substr(2, 9)}`
     );
 
@@ -105,6 +106,7 @@ test.describe('DEMO', () => {
 
     // Fetch the verification email
     const mailbox = await emailHelper.getRecentEmail({
+      accountId, // Pass accountId for proper cleanup
       maxWaitTime: 80000,
       waitInterval: 1000,
       deleteAfterRead: true,

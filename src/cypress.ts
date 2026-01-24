@@ -3,6 +3,7 @@ import {
   generateEmail,
   GetEmailOptions,
   getRecentEmail,
+  getVerificationCode,
   MessageContent,
 } from './index';
 
@@ -14,7 +15,12 @@ Cypress.Commands.add('getRecentEmail', function (options: GetEmailOptions) {
   return cy.wrap(getRecentEmail(options));
 });
 
+Cypress.Commands.add('getVerificationCode', function (text?: string) {
+  return cy.wrap(getVerificationCode(text));
+});
+
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       /**
@@ -37,6 +43,7 @@ declare global {
        * Retrieves the latest message from the inbox.
        *
        * @param {GetEmailOptions} [options] - Optional settings for polling and deletion.
+       * @param {string} [options.accountId] - Account ID to cleanup after reading.
        * @param {number} [options.maxWaitTime=30000] - Maximum time to wait for messages (in milliseconds). Default is 30 seconds.
        * @param {number} [options.waitInterval=2000] - Time interval between polling attempts (in milliseconds). Default is 2 seconds.
        * @param {boolean} [options.logPolling=false] - Whether to log polling attempts. Default is `false`.
@@ -74,6 +81,26 @@ declare global {
       getRecentEmail(
         options: GetEmailOptions
       ): Chainable<MessageContent | null>;
+
+      /**
+       * Extracts a verification code from email content.
+       *
+       * This function scans the given text for a sequence of 5 or more
+       * consecutive digits and returns the first valid verification code.
+       *
+       * @param {string} text - The content of the email, typically the body or HTML.
+       * @returns {Promise<string>} The first verification code found.
+       *
+       * @throws {Error} If no valid verification code is found.
+       *
+       * @example
+       * cy.getRecentEmail().then((email) => {
+       *   cy.getVerificationCode(email?.text).then((code) => {
+       *     cy.log(code); // Output: "123456"
+       *   });
+       * });
+       */
+      getVerificationCode(text?: string): Chainable<string>;
     }
   }
 }

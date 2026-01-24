@@ -101,7 +101,28 @@ console.log('Message received:', message);
 
 ### **Playwright Example**
 
-For using temp-disposable-email with Playwright, see the example in the [Playwright folder](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/tree/master/examples/playwright).
+For using temp-disposable-email with Playwright, you can use it directly or with fixtures.
+
+#### Using Playwright Fixtures (Recommended)
+
+```typescript
+import { test, expect } from 'temp-disposable-email/playwright';
+
+test('sign up flow', async ({ page, emailHelper }) => {
+  const { emailAddress, accountId } = await emailHelper.generateEmail();
+  
+  // Your test code...
+  
+  const email = await emailHelper.getRecentEmail({ 
+    accountId,
+    maxWaitTime: 50000 
+  });
+  
+  const code = await emailHelper.getVerificationCode(email?.text);
+});
+```
+
+For complete examples, see the [Playwright folder](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/tree/master/examples/playwright).
 
 ### **Cypress Example**
 
@@ -109,19 +130,29 @@ For using temp-disposable-email with Cypress.
 
 #### Import package
 
-import package in your `support/commands.{ts|js}`
+Import the package in your `support/commands.{ts|js}`:
 
 ```typescript
 import 'temp-disposable-email/cypress';
 ```
 
-test may look like this: see the example in the [Cypress folder](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/tree/master/examples/cypress).
+#### TypeScript Setup
+
+Add the type reference at the top of your test files:
+
+```typescript
+/// <reference types="temp-disposable-email/cypress" />
+```
+
+#### Example Test
+
+See the complete example in the [Cypress folder](https://github.com/pirasanthan-jesugeevegan/temp-disposable-email/tree/master/examples/cypress).
 
 ```typescript
 it('[Custom Command] - Sign up - Check email content and subject', () => {
   // Create a dynamic email address
   cy.generateEmail(`cypress_${Math.random().toString().substr(2, 9)}`).then(
-    ({ emailAddress }) => {
+    ({ emailAddress, accountId }) => {
       // Navigate to the sign-up page
       cy.visit('https://app.postdrop.io/signup');
 
@@ -135,6 +166,7 @@ it('[Custom Command] - Sign up - Check email content and subject', () => {
       cy.contains('h1', 'Thanks for signing up!').should('be.visible');
       // Fetch the verification email
       cy.getRecentEmail({
+        accountId, // Pass accountId for proper cleanup
         maxWaitTime: 80000,
         waitInterval: 1000,
         deleteAfterRead: true,
@@ -153,7 +185,7 @@ it('[Custom Command] - Sign up - Check email content and subject', () => {
 
 ### **Node Example**
 
-Here's a complete example of creating an inbox, retrieving a message, and deleting the account:
+Here's a complete example of creating an inbox, retrieving a message, and cleaning up:
 
 ```typescript
 import { generateEmail, getRecentEmail } from 'temp-disposable-email';
@@ -161,11 +193,12 @@ import { generateEmail, getRecentEmail } from 'temp-disposable-email';
 async function run() {
   try {
     // Create a new inbox
-    const { emailAddress } = await generateEmail();
+    const { emailAddress, accountId } = await generateEmail();
     console.log('Created email:', emailAddress);
 
     // Get the first available message from the inbox
     const message = await getRecentEmail({
+      accountId, // Pass accountId for automatic cleanup
       maxWaitTime: 50000,
       waitInterval: 3000,
       logPolling: true,
@@ -202,6 +235,7 @@ run();
 - **Description**: Retrieves the latest message from the inbox, polling if necessary.
 - **Parameters**:
   - `options` (Optional): Polling configuration for waiting for messages. See GetEmailOptions.
+    - `accountId` (Optional): Account ID for cleanup after reading. **Recommended** to prevent resource leaks.
     - `maxWaitTime` (Optional): The maximum time to wait for messages (in milliseconds).
     - `waitInterval` (Optional): The interval between polling attempts (in milliseconds).
     - `logPolling` (Optional): Whether to log each polling attempt for debugging purposes.

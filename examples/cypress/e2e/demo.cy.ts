@@ -1,3 +1,5 @@
+/// <reference types="../../../src/cypress" />
+
 import {
   generateEmail,
   getRecentEmail,
@@ -6,11 +8,13 @@ import {
   GeneratedEmail,
 } from '../../../src';
 //! NOTE: replace from '../../src' with 'temp-disposable-email' in your project
+//! NOTE: If using the package, add: /// <reference types="temp-disposable-email/cypress" />
+
 describe('DEMO', () => {
   it('[Custom Command] - Sign up - Check email content and subject', () => {
     // Create a dynamic email address
     cy.generateEmail(`cypress_${Math.random().toString().substr(2, 9)}`).then(
-      ({ emailAddress }) => {
+      ({ emailAddress, accountId }) => {
         // Navigate to the sign-up page
         cy.visit('https://app.postdrop.io/signup');
 
@@ -24,6 +28,7 @@ describe('DEMO', () => {
         cy.contains('h1', 'Thanks for signing up!').should('be.visible');
         // Fetch the verification email
         cy.getRecentEmail({
+          accountId, // Pass accountId for proper cleanup
           maxWaitTime: 80000,
           waitInterval: 1000,
           deleteAfterRead: true,
@@ -41,7 +46,7 @@ describe('DEMO', () => {
   it('[Direct Use] - Sign up - Get Verification code from email', () => {
     // Create a dynamic email address
     cy.wrap(generateEmail()).then((email) => {
-      const { emailAddress } = email as GeneratedEmail;
+      const { emailAddress, accountId } = email as GeneratedEmail;
 
       // Navigate to the playground website
       cy.visit('https://playground.mailslurp.com');
@@ -56,6 +61,7 @@ describe('DEMO', () => {
       // Fetch the verification code from the email
       cy.wrap(
         getRecentEmail({
+          accountId, // Pass accountId for proper cleanup
           maxWaitTime: 80000,
           waitInterval: 1000,
           deleteAfterRead: true,
@@ -64,7 +70,7 @@ describe('DEMO', () => {
       ).then((mailbox) => {
         const messageContent = mailbox as MessageContent;
 
-        getVerificationCode(messageContent?.html[0]).then(
+        cy.getVerificationCode(messageContent?.html[0]).then(
           (verificationCode) => {
             // Fill in the verification code and complete sign-up
             cy.get(

@@ -129,6 +129,18 @@ describe('Email Utils Tests', () => {
     );
   });
 
+  it('should throw an error if text is undefined', async () => {
+    await expect(getVerificationCode(undefined)).rejects.toThrow(
+      'No text provided to extract verification code from.'
+    );
+  });
+
+  it('should throw an error if text is empty string', async () => {
+    await expect(getVerificationCode('')).rejects.toThrow(
+      'No text provided to extract verification code from.'
+    );
+  });
+
   it('should delete an account after processing emails', async () => {
     mockedDeleteAccount.mockResolvedValueOnce();
     await expect(deleteAccount('account1')).resolves.toBe(undefined);
